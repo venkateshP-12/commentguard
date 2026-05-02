@@ -84,7 +84,7 @@ We wrote a startup script that automatically boots up both the AI Backend and th
 
 ```bash
 # Clone the repository
-git clone https://github.com/init-krish/commentguard
+git clone https://github.com/venkateshP-12/commentguard/
 cd commentguard
 
 # On Mac/Linux:
