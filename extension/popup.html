@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>CommentGuard Settings</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      width: 320px;
+      margin: 0;
+      padding: 16px;
+      background: #0f1115;
+      color: #f8fafc;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .logo {
+      width: 24px;
+      height: 24px;
+    }
+    h1 {
+      font-size: 16px;
+      margin: 0;
+      font-weight: 600;
+    }
+    .status-badge {
+      margin-left: auto;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+      font-weight: bold;
+    }
+    .status-badge.offline {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+    }
+    .card {
+      background: #181b21;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .form-group {
+      margin-bottom: 12px;
+    }
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+    input[type="text"], input[type="url"] {
+      width: 100%;
+      box-sizing: border-box;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: white;
+      padding: 6px 8px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    input[type="range"] {
+      width: 100%;
+      margin-top: 4px;
+    }
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 36px;
+      height: 20px;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #374151;
+      transition: .2s;
+      border-radius: 20px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .2s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: #3b82f6;
+    }
+    input:checked + .slider:before {
+      transform: translateX(16px);
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 8px;
+      background: #3b82f6;
+      color: white;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background 0.2s;
+      margin-top: 16px;
+    }
+    .btn:hover {
+      background: #2563eb;
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #e2e8f0;
+      margin-top: 8px;
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .save-status {
+      font-size: 11px;
+      color: #10b981;
+      text-align: center;
+      min-height: 14px;
+      margin-top: 8px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="icons/icon48.png" class="logo" alt="Logo">
+    <h1>CommentGuard v3</h1>
+    <div id="apiStatus" class="status-badge">Checking...</div>
+  </div>
+
+  <div class="card">
+    <div class="toggle-row form-group">
+      <label style="margin: 0; font-size: 13px; color: white;">Enable Protection</label>
+      <label class="toggle-switch">
+        <input type="checkbox" id="enabledToggle" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="form-group">
+      <label for="apiUrl">API Endpoint</label>
+      <input type="url" id="apiUrl" value="http://localhost:8000/moderate">
+    </div>
+    
+    <div class="form-group">
+      <label for="threshold">Block Threshold: <span id="thresholdVal">50%</span></label>
+      <input type="range" id="threshold" min="10" max="99" value="50">
+    </div>
+  </div>
+
+  <div class="card" style="padding-bottom: 8px;">
+    <div style="font-size: 12px; font-weight: 600; margin-bottom: 8px; color: white;">Session Stats (This Page)</div>
+    <div class="stats-row" style="border: none; padding: 0; margin: 0;">
+      <span>Scanned: <strong id="statScanned" style="color: white;">0</strong></span>
+      <span>Blocked: <strong id="statBlocked" style="color: #ef4444;">0</strong></span>
+    </div>
+  </div>
+
+  <button id="saveBtn" class="btn">Save Settings</button>
+  <a href="http://localhost:3000" target="_blank" class="btn btn-secondary">Open Live Dashboard ↗</a>
+  
+  <div id="saveStatus" class="save-status">Settings saved!</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
